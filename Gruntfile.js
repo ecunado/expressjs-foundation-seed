@@ -1,5 +1,11 @@
 module.exports = function (grunt) {
 
+  var configuration = {
+    development: true,
+    port: 3500,
+    temp: '.temp'
+  };
+
   // Load grunt tasks
   require('load-grunt-tasks')(grunt);
 
@@ -7,58 +13,90 @@ module.exports = function (grunt) {
 
     pkg: grunt.file.readJSON('package.json'),
 
-    // Clean task
-    clean: {
-      pre: ['dist/*', 'temp/*'],
-      post: ['dist/vendor']
-    },
+    configuration: configuration,
 
-    // Copy src contents into dist folder
-    copy: {
-      dist: {
-        files: [{
-          expand: true,
-          dot: true,
-          cwd: 'public/',
-          dest: 'dist/',
-          src: ['*', 'css/**', 'vendor/**', 'js/**', 'images/**'],
-          filter: 'isFile'
-        }]
-      }
-    },
-
-    // Compiles sass files
-    sass: {
-      options: {
-        includePaths: ['public/vendor/foundation/scss']
+    watch: {
+      partials: {
+        files: ['views/partials-src/*.html', '!views/partials/*.html'],
+        tasks: ['build'],
       },
-      dist: {
+      sass: {
+        files: ['public/scss/**/*.scss'],
+        tasks: ['build'],
+      },
+      js: {
+        files: ['public/js/**'],
+        tasks: ['build'],
+      },
+      livereload: {
         options: {
-          outputStyle: 'compressed'
+          livereload: true
         },
-        files: {
-          'public/css/main.css': 'public/scss/main.scss'
-        }
+        files: [
+          '!public/scss/**',
+          '!views/partials-src/**',
+          '.rebooted', // nodemon restart
+          'public/css/**', // dev mode
+          'public/assets/css/*.css', // product. mode
+          'public/jss/**',
+          'config/**',
+          'views/**/*.html',
+          'server,js'
+        ]
       }
     },
 
     useminPrepare: {
-      html: [
-        'dist/*.html' // Ficheros donde buscamos bloques de build
-      ]
+      html: ['public/*.html'], // Ficheros donde buscamos bloques de build
+      options: {
+        staging: '<%= configuration.temp %>', // Directorio temporal para la salida de ficheros
+        dest: 'public/',
+        root: 'public/',
+        flow: {
+          html: {
+            steps: {
+              js: ['concat', 'uglifyjs'],
+              css: ['concat', 'cssmin']
+            },
+            post: {}
+          }
+        }
+      }
     },
 
     usemin: {
-      html: [
-        'dist/*.html'
-      ],
+      html: ['public/*.html'],
       options: {
-        dirs: ['dist/']
+        assetsDirs: ['public']
+      }
+    },
+
+    // Configuración para la tarea de ficheros sass
+    sass: {
+      options: {
+        style: 'compressed',
+        loadPath: ['public/vendor', 'public/vendor/foundation/scss/']
+      },
+      dist: {
+        files: {
+          'public/assets/css/main.css': 'public/scss/main.scss'
+        }
+      }
+    },
+
+    imagemin: {
+      dynamic: {
+        files: [{
+          expand: true,
+          cwd: 'public/images/',
+          src: ['**/*.{png,jpg,gif}'],
+          dest: 'public/assets/images/'
+        }]
       }
     },
 
     // Renames files for browser caching purposes
-    filerev: {
+    rev: {
       options: {
         encoding: 'utf8',
         algorithm: 'md5',
@@ -67,99 +105,120 @@ module.exports = function (grunt) {
       assets: {
         files: [{
           src: [
-            'dist/css/*.css',
-            'dist/js/*.js'
+            'public/assets/css/**/*.css',
+            'public/assets/js/**/*.js'
           ]
         }]
       }
     },
 
-    // Image optimization
-    imagemin: {
-      dynamic: {
+    open: {
+      dev: {
+        path: 'http://127.0.0.1:<%= configuration.port %>/',
+        app: 'Google Chrome'
+      }
+    },
+
+    copy: {
+      prebuild: {
         files: [{
+          flatten: true,
           expand: true,
-          cwd: 'src/images/',
-          src: ['**/*.{png,jpg,gif}'],
-          dest: 'dist/images/'
+          src: ['views/partials-src/*.html'],
+          dest: 'public/',
+          filter: 'isFile'
+        }]
+      },
+      postbuild: {
+        files: [{
+          flatten: true,
+          expand: true,
+          src: ['public/*.html'],
+          dest: 'views/partials/',
+          filter: 'isFile'
+        }]
+      },
+      partials: {
+        files: [{
+          flatten: true,
+          expand: true,
+          src: ['views/partials-src/*'],
+          dest: 'views/partials/',
+          filter: 'isFile'
         }]
       }
     },
 
-    // listen for changes (development)
-    watch: {
-      grunt: {
-        files: ['Gruntfile.js']
-      },
-
-      sass: {
-        files: 'src/scss/**/*.scss',
-        tasks: ['sass']
-      },
-
-      js: {
-        files: ['src/js/**'],
-        tasks: ['build'],
-      },
-
-      livereload: {
-        options: {
-          livereload: true
-        },
-        files: [
-          'src/*.html',
-          'src/css/**',
-        ]
-      }
+    clean: {
+      prebuild: ['public/assets/*', '.tmp/*', 'views/partials/*.html'],
+      postbuild: ['public/*.html']
     },
 
-    connect: {
+    nodemon: {
       server: {
+        script: 'server.js',
         options: {
-          base: 'src',
-          port: 8000
+          ignoredFiles: ['node_modules/**', 'README.md', 'public/js/**'],
+          ext: 'js',
+          watch: ['config', 'controllers', 'lib'],
+          delay: 1000,
+          env: {
+            PORT: '<%= configuration.port %>'
+          },
+          cwd: __dirname,
+          callback: function (nodemon) {
+            // refreshes browser when server reboots
+            nodemon.on('restart', function () {
+              // Delay before server listens on port
+              setTimeout(function () {
+                require('fs').writeFileSync('.rebooted', 'rebooted');
+              }, 1000);
+            });
+          }
         }
       }
     },
 
-    open: {
-      dev: {
-        path: 'http://127.0.0.1:8000/',
-        app: 'Google Chrome'
-      }
+    concurrent: {
+      options: {
+        logConcurrentOutput: true
+      },
+      server: [
+        'nodemon:server',
+        'watch'
+      ],
     }
 
   });
 
-  // build tasks
-  grunt.registerTask('build', ['sass']);
+  grunt.registerTask('optimize', (function () {
+    if (!configuration.development) {
+      return [
+        'useminPrepare',
+        'concat',
+        'cssmin',
+        'uglify',
+        'rev',
+        'usemin'
+      ];
+    } else {
+      return ['copy:partials'];
+    }
+  })());
 
-  // default task (development)
-  grunt.registerTask('default', [
-    'build',
-    'connect:server',
-    'open',
-    'watch'
-  ]);
-
-  // asset pipeline tasks
-  grunt.registerTask('optimize', [
-    'useminPrepare',
-    'concat',
-    'imagemin',
-    'cssmin',
-    'uglify',
-    'filerev',
-    'usemin'
-  ]);
-
-  // Dist
-  grunt.registerTask('dist', [
+  // Build
+  grunt.registerTask('build', [
+    'clean:prebuild',
+    'copy:prebuild',
     'sass',
-    'clean:pre',
-    'copy',
+    'imagemin',
     'optimize',
-    'clean:post'
+    'copy:postbuild',
+    'clean:postbuild'
   ]);
+
+  // Tarea por defecto de grunt
+  grunt.registerTask('default', ['build', 'concurrent:server']);
+  // grunt.registerTask('server', ['nodemon']);
 
 };

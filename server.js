@@ -10,11 +10,15 @@ require('./config/logging');
 
 // create express app
 var app = express();
+var port = process.env.PORT || 80;
+var development = (port != 80);
 
 // Disable X-Powered-By HTTP response header 
 app.disable('x-powered-by');
 app.set('view engine', 'html');
-app.enable('view cache');
+if (!development) {
+  app.enable('view cache');
+}
 
 // create new handlebars engine. Set html as template extension
 handlebars = hbs.create({
@@ -34,6 +38,6 @@ app.engine('html', handlebars.engine);
 require('./config/routes')(app);
 
 // Start listening
-app.listen(1234);
+app.listen(port);
 
 module.exports = app;
