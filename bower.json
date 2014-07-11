@@ -1,6 +1,7 @@
 {
   "name": "expressjs-foundation-seed",
   "dependencies": {
-    "foundation": "zurb/bower-foundation"
+    "foundation": "zurb/bower-foundation",
+    "font-awesome": "~4.1.0"
   }
 }
