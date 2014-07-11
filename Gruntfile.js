@@ -19,7 +19,7 @@ module.exports = function (grunt) {
         files: [{
           expand: true,
           dot: true,
-          cwd: 'src/',
+          cwd: 'public/',
           dest: 'dist/',
           src: ['*', 'css/**', 'vendor/**', 'js/**', 'images/**'],
           filter: 'isFile'
@@ -30,14 +30,14 @@ module.exports = function (grunt) {
     // Compiles sass files
     sass: {
       options: {
-        includePaths: ['src/vendor/foundation/scss']
+        includePaths: ['public/vendor/foundation/scss']
       },
       dist: {
         options: {
           outputStyle: 'compressed'
         },
         files: {
-          'src/css/main.css': 'src/scss/main.scss'
+          'public/css/main.css': 'public/scss/main.scss'
         }
       }
     },

@@ -1,23 +1,31 @@
 {
-  "name": "foundation-seed",
-  "version": "0.0.2",
-  "description": "Simple foundation 5 seed with grunt, sass, asset pipeline and livereload",
+  "name": "expressjs-foundation-seed",
+  "version": "0.0.1",
+  "description": "Simple expressjs seed with foundation and asset pipeline",
+  "readmeFilename": "README.md",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ecunado/foundation-seed.git"
+    "url": "https://github.com/ecunado/expressjs-foundation-seed.git"
   },
   "keywords": [
+    "expressjs",
+    "nodejs",
     "foundation",
     "sass",
     "livereload",
     "seed"
   ],
   "author": {
-    "name": "Ezequiel Cuñado"
+    "name": "Ezequiel Cuñado",
+    "email": "ecunado@gmail.com"
   },
   "license": "BSD",
+  "main": "server.js",
+  "engines": {
+    "node": ">= 0.10.26"
+  },
   "bugs": {
-    "url": "https://github.com/ecunado/foundation-seed/issues"
+    "url": "https://github.com/ecunado/expressjs-foundation-seed/issues"
   },
   "devDependencies": {
     "node-sass": "~0.7.0",
@@ -36,5 +44,12 @@
     "grunt-contrib-connect": "^0.8.0",
     "grunt-open": "^0.2.3"
   },
-  "readmeFilename": "README.md"
+  "dependencies": {
+    "express": "^4.5.1",
+    "winston": "^0.7.3",
+    "express3-handlebars": "^0.5.0"
+  },
+  "scripts": {
+    "start": "node server.js"
+  }
 }
