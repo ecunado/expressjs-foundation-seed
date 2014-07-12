@@ -13,6 +13,12 @@ var app = express();
 var port = process.env.PORT || 80;
 var development = (port != 80);
 
+// process event handlers
+process.on('uncaughtException', function (err) {
+  // handle the error safely
+  winston.error('Uncaught Exception. Stack trace:\n%s', err.stack);
+});
+
 // Disable X-Powered-By HTTP response header 
 app.disable('x-powered-by');
 app.set('view engine', 'html');
@@ -39,5 +45,13 @@ require('./config/routes')(app);
 
 // Start listening
 app.listen(port);
+
+// process event handlers
+process.on('uncaughtException', function (err) {
+  // handle the error safely
+  winston.error('Uncaught Exception. Stack trace:\n%s', err.stack);
+});
+
+winston.info("Server listening %s", port);
 
 module.exports = app;
