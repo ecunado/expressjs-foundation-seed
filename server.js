@@ -11,7 +11,7 @@ require('./config/logging');
 // create express app
 var app = express();
 var port = process.env.PORT || 80;
-var development = (port != 80);
+var development = process.env.DEVELOPMENT_MODE || false;
 
 // process event handlers
 process.on('uncaughtException', function (err) {
@@ -25,6 +25,7 @@ app.set('view engine', 'html');
 if (!development) {
   app.enable('view cache');
 }
+app.set('dev', development);
 
 // create new handlebars engine. Set html as template extension
 handlebars = hbs.create({

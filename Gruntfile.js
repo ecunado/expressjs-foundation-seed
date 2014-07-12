@@ -163,7 +163,8 @@ module.exports = function (grunt) {
           watch: ['config', 'controllers', 'lib'],
           delay: 1000,
           env: {
-            PORT: '<%= configuration.port %>'
+            PORT: '<%= configuration.port %>',
+            DEVELOPMENT_MODE: 1
           },
           cwd: __dirname,
           callback: function (nodemon) {
