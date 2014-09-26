@@ -14,6 +14,7 @@ You'll need to have the following items installed before continuing.
 
 ```bash
 git clone git@github.com:whynotsoluciones/foundation-seed.git
+cd foundation-seed
 npm install && bower install
 ```
 
