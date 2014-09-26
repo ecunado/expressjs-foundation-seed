@@ -5,7 +5,7 @@
   "readmeFilename": "README.md",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ecunado/expressjs-foundation-seed.git"
+    "url": "https://github.com/whynotsoluciones/expressjs-foundation-seed.git"
   },
   "keywords": [
     "expressjs",
@@ -25,7 +25,7 @@
     "node": ">= 0.10.26"
   },
   "bugs": {
-    "url": "https://github.com/ecunado/expressjs-foundation-seed/issues"
+    "url": "https://github.com/whynotsoluciones/expressjs-foundation-seed/issues"
   },
   "devDependencies": {
     "node-sass": "~0.7.0",
