@@ -13,8 +13,8 @@ You'll need to have the following items installed before continuing.
 ## Quickstart
 
 ```bash
-git clone git@github.com:whynotsoluciones/foundation-seed.git
-cd foundation-seed
+git clone git@github.com:whynotsoluciones/express-foundation-seed.git
+cd express-foundation-seed
 npm install && bower install
 ```
 
